@@ -1,12 +1,24 @@
 #!/usr/bin/env python3
-rows = """00607675
+rows = """
+00607675
 00767676
 00077776
 00667733
 00767332
 00073322
 22223322
-33332231""".splitlines()
+33332231
+
+
+65654445
+76555544
+76665554
+76554455
+26776545
+11727654
+21112264
+12111204
+""".splitlines()
 
 
 def fourbits(byte):
@@ -14,6 +26,8 @@ def fourbits(byte):
 
 def to_plane(rows, start=3):
     for row in rows:
+        if not row:
+            continue
         plane = [] # will have same as number of rows
         for byte in row:
             bits = fourbits(byte)
