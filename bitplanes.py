@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 rows = """
 00607675
 00767676
@@ -37,11 +38,20 @@ bb899a8b
 bbd787b0
 """.splitlines()
 
+rows = [r for r in rows if r]
+
+def chunk8(rows):
+    x = 0
+    while x < len(rows):
+        yield rows[x:x+8]
+        x = x + 8
+
+chunks = chunk8(rows)
 
 def fourbits(byte):
     return "{0:04b}".format(int(byte, 16))
 
-def to_plane(rows, start=3):
+def to_plane(rows, start):
     for row in rows:
         if not row:
             continue
@@ -49,14 +59,15 @@ def to_plane(rows, start=3):
         for byte in row:
             bits = fourbits(byte)
             plane.append(bits)
-        for i in range(2):
-            bitplane = ''.join([x[start-i] for x in plane])
+        for i in (0, -1):
+            bitplane = ''.join([x[start + i] for x in plane])
             byte = int(bitplane, 2)
             yield byte.to_bytes(1, byteorder='little')
 
 with open('Sprites.vra', 'wb') as f:
-    for byte in to_plane(rows):
-        f.write(byte)
-
-    for byte in to_plane(rows, 1):
-        f.write(byte)
+    for chunk in chunks:
+        print(chunk)
+        for byte in to_plane(chunk, 3):
+            f.write(byte)
+        for byte in to_plane(chunk, 1):
+            f.write(byte)
