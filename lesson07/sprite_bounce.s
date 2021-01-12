@@ -348,10 +348,11 @@ VRAMLoop:
         phd                     ; push direct register to stack
         tsc                     ; transfer stack to ...
         tcd                     ; direct register
+        .byte $42, $00
         ; constants to access args on stack with direct addressing
         NumBytes    = $07       ;  number of bytes
         SrcPointer  = $08       ;  source address of sprite data
-        DestPointer = $0a       ; dest address in CGRAM IS THIS RIGHT?
+        DestPointer = $0a       ; dest address in CGRAM
 
         ; set CGRAM destination address
         lda DestPointer         ; load dest addr into a
