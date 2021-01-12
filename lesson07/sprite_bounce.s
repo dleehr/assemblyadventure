@@ -422,17 +422,4 @@ CGRAMLoop:
 ; emulation m.  COP,        BRK,        ABT,
 .addr           $0000,      $0000,      $0000
 ;               NMI,        RST,        IRQ
-.addr           $0000,      Res
-
-
-
-
-
-
-
-
-
-
-
-
-
+.addr           $0000,      ResetHandler, $0000
