@@ -75,6 +75,8 @@ ColorData:  .incbin "SpriteColors.pal"
     tsx             ; save current stack pointer
     pea $0000       ; push VRAM destination address to stack (is this a memory map offset thing later?)
     pea SpriteData  ; push sprite source address to stack
+    lda #$0080      ; push count of bytes (128 / $80) to transfer to stack
+    pha
     jsr LoadVRAM    ; transfer vram data in subroutine
     txs             ; "delete" data on stack by restoring old stack pointer
 
@@ -305,8 +307,9 @@ UpdateOtherSprites:
         tsc         ; transfer stack pointer to C
         tcd         ; transfer C to direct register
         ; using constants to access args on stack with direct register
-        SrcPointer  = $07   ; source memory address - 2 bytes
-        DestPointer = $09   ; dest memory address - 2 bytes
+        NumBytes    = $07   ; number of bytes - 2 bytes
+        SrcPointer  = $09   ; source memory address - 2 bytes
+        DestPointer = $0b   ; dest memory address - 2 bytes
 
         ; set dest address in VRAM and address inc after a write
         ldx DestPointer ; load destination pointer ... this comes in as 0000 from pea
@@ -323,7 +326,7 @@ VRAMLoop:
         lda (SrcPointer, S), Y  ; get bitplane 1/3 byte from sprite data
         sta VMDATAH             ; write the byte in A to VRAM
         iny                     ; increment loop counter
-        cpy #$80                ; Check if we have written all the bytes
+        cpy NumBytes            ; Check if we have written all the bytes
         bcc VRAMLoop            ; if Y is smaller than the count, continue
 
         ; all done
