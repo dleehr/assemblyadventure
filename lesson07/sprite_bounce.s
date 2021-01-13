@@ -75,8 +75,7 @@ ColorData:  .incbin "SpriteColors.pal"
     tsx             ; save current stack pointer
     pea $0000       ; push VRAM destination address to stack (is this a memory map offset thing later?)
     pea SpriteData  ; push sprite source address to stack
-    lda #$0080      ; push count of bytes (128 / $80) to transfer to stack
-    pha
+    pea $0080      ; push count of bytes (128 / $80) to transfer to stack
     jsr LoadVRAM    ; transfer vram data in subroutine
     txs             ; "delete" data on stack by restoring old stack pointer
 
