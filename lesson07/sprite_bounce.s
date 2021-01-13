@@ -75,7 +75,7 @@ ColorData:  .incbin "SpriteColors.pal"
     tsx             ; save current stack pointer
     pea $0000       ; push VRAM destination address to stack (is this a memory map offset thing later?)
     pea SpriteData  ; push sprite source address to stack
-    pea $0080      ; push count of bytes (128 / $80) to transfer to stack
+    pea $0080       ; push count of bytes (128 / $80) to transfer to stack
     jsr LoadVRAM    ; transfer vram data in subroutine
     txs             ; "delete" data on stack by restoring old stack pointer
 
@@ -84,6 +84,7 @@ ColorData:  .incbin "SpriteColors.pal"
     lda #$80        ; push CGRAM destination address to stack
     pha             ; through A (why not pea? - guess because that's 2 bytes and we only want 1?)
     pea ColorData   ; Push paletes source address to stack
+    pea $0020       ; push count of bytes (32 / $20) to transfer to stack
     jsr LoadCGRAM   ; transfer color data into CGRAM
     txs             ; "delete" data on stack by restoring old stack pointer
 
@@ -347,8 +348,9 @@ VRAMLoop:
         tcd                     ; direct register
         .byte $42, $00
         ; constants to access args on stack with direct addressing
-        SrcPointer  = $07       ;  source address of sprite data
-        DestPointer = $09       ; dest address in CGRAM
+        NumBytes    = $07       ; number of bytes to transfer
+        SrcPointer  = $09       ; source address of sprite data
+        DestPointer = $0b      ; dest address in CGRAM
 
         ; set CGRAM destination address
         lda DestPointer         ; load dest addr into a
@@ -362,7 +364,7 @@ CGRAMLoop:
         lda (SrcPointer, S), Y  ; get color high byte
         sta CGDATA              ; store in CGRAM
         iny
-        cpy #$20                ; compare to transfer count
+        cpy NumBytes            ; compare to transfer count
         bcc CGRAMLoop           ; loop until done
 
         ; all done
